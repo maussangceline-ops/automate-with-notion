@@ -1,0 +1,48 @@
+name: ETL for Elevio
+
+on:
+  schedule:
+    - cron: "0 6 * * *"
+  workflow_dispatch:
+  push:
+    branchs: [main]
+    paths:
+      - etl.py
+      - requirements.txt
+
+jobs:
+  etl:
+    runs-on: ubuntu-latest
+    env:
+      SOURCE_URL: SHEET_ID
+      PAGE_SIZE: "100"
+      DATABASE_ID: ${{ github.repository }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run ETL
+        env:
+          NOTION_API_KEY: ${{ secrets.NOTION_API_KEY }}
+          NOTION_DATABASE_ID: ${{ secrets.NOTION_DATABASE_ID }}
+          PG_NAME: ${{ secrets.PG_NAME }}
+          PG_HOST: ${{ secrets.PG_HOST }}
+          PG_PASSWORD: ${{ secrets.PG_PASSWORD }}
+          PG_PORT: ${{ secrets.PG_PORT }}
+          PG_USER: ${{ secrets.PG_USER }}
+          PG_DB: ${{ secrets.PG_DB }}
+          PG_TABLE: campaigns
+          PG_IF_EXISTS: replace
+          PG_CHUNKSIZE: "1000"
+          LOG_LEVEL: INFO
+
+        run: python etl.py
