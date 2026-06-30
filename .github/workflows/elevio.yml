@@ -32,7 +32,7 @@ jobs:
 
       - name: Run ETL
         env:
-          NOTION_API_KEY: ${{ secrets.NOTION_API_KEY }}
+          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
           NOTION_DATABASE_ID: ${{ secrets.NOTION_DATABASE_ID }}
           PG_NAME: ${{ secrets.PG_NAME }}
           PG_HOST: ${{ secrets.PG_HOST }}
